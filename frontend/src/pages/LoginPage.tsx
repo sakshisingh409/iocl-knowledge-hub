@@ -1,35 +1,36 @@
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { supabase } from "../services/supabase";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth();
   const [email, setEmail] = useState("employee@iocl.in");
   const [password, setPassword] = useState("iocl@123");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  if (isAuthenticated) {
-    return <Navigate to="/home" replace />;
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError("");
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
+
+  if (error) {
+    setError(error.message);
+    return;
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const err = login(email, password);
-    if (err) {
-      setError(err);
-      return;
-    }
-    navigate("/home");
-  };
+  alert("Login Successful");
 
-  const fillDemo = (demoEmail: string, demoPassword: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
-    setError("");
-  };
+  navigate("/home");
+};
 
   return (
     <div className="flex min-h-screen">
@@ -148,31 +149,6 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <p className="mb-3 text-[11px] font-bold tracking-wider text-slate-400">
-              DEMO CREDENTIALS
-            </p>
-            <button
-              type="button"
-              onClick={() => fillDemo("employee@iocl.in", "iocl@123")}
-              className="mb-2 flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition hover:bg-white"
-            >
-              <span className="rounded bg-blue-100 px-2 py-0.5 font-bold text-blue-700">
-                EMPLOYEE
-              </span>
-              <span className="font-mono text-slate-600">employee@iocl.in / iocl@123</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo("admin@iocl.in", "admin@123")}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-left text-xs transition hover:bg-white"
-            >
-              <span className="rounded bg-orange-100 px-2 py-0.5 font-bold text-orange-700">
-                ADMIN
-              </span>
-              <span className="font-mono text-slate-600">admin@iocl.in / admin@123</span>
-            </button>
-          </div>
           <div className="mt-8 border-t border-slate-200 pt-6 text-center">
             <p className="text-sm text-slate-500">
               Don't have an account?

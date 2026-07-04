@@ -5,14 +5,15 @@ import PageHeader from "../components/ui/PageHeader";
 
 export default function ProfilePage() {
   const { user, logout, bookmarkedPublications, recentlyViewed } = useAuth();
+  console.log("USER FROM CONTEXT:", user);
   const navigate = useNavigate();
 
   if (!user) return null;
 
-  const handleSignOut = () => {
-    logout();
-    navigate("/login");
-  };
+  const handleSignOut = async () => {
+  await logout();
+  navigate("/login");
+};
 
   return (
     <div>
@@ -22,30 +23,38 @@ export default function ProfilePage() {
         <div className="col-span-2 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
           <div className="mb-6 flex items-center gap-4">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-iocl-navy text-2xl font-bold text-white">
-              {user.name.charAt(0)}
+              {user.full_name?.charAt(0).toUpperCase()}
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-extrabold text-iocl-navy">{user.name}</h2>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase ${
-                    user.role === "admin"
-                      ? "bg-orange-100 text-orange-700"
-                      : "bg-blue-100 text-blue-700"
-                  }`}
-                >
-                  {user.role}
-                </span>
+                <h2 className="text-xl font-extrabold text-iocl-navy">
+                  {user.full_name}
+                </h2>
+                
               </div>
-              <p className="text-sm text-slate-400">{user.employeeId}</p>
+              <p className="text-sm text-slate-400">
+                {user.designation}
+              </p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <InfoField icon={Mail} label="EMAIL" value={user.email} />
-            <InfoField icon={IdCard} label="EMPLOYEE ID" value={user.employeeId} />
-            <InfoField icon={Building2} label="DEPARTMENT" value={user.department} />
-            <InfoField icon={MapPin} label="LOCATION" value={user.location} />
+            <InfoField
+              icon={IdCard}
+              label="EMPLOYEE ID"
+              value={user.employee_id}
+            />
+            <InfoField
+                icon={Building2}
+                label="DEPARTMENT"
+                value={user.department}
+                />
+            <InfoField
+                icon={MapPin}
+                label="LOCATION"
+                value={user.location}
+                />
           </div>
 
           <button

@@ -11,6 +11,7 @@ import ChatPage from "./pages/ChatPage";
 import ProfilePage from "./pages/ProfilePage";
 import SignupPage from "./pages/SignupPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import UpdatePasswordPage from "./pages/UpdatePasswordPage";
 import HomePage from "./pages/HomePage";
 function RootRedirect() {
   const { isAuthenticated } = useAuth();
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/update-password" element={<UpdatePasswordPage />} />
           <Route path="/home" element={<HomePage />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<MainLayout />}>

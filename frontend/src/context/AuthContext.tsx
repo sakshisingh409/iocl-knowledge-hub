@@ -2,10 +2,13 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from "react";
+
+import { supabase } from "../services/supabase";
 import { ALL_PUBLICATIONS, DEMO_USERS } from "../data/mockData";
 import type { Publication, User } from "../types";
 
@@ -26,10 +29,7 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("iocl_user");
-    return stored ? (JSON.parse(stored) as User) : null;
-  });
+  const [user, setUser] = useState<any>(null);
   const [publications, setPublications] = useState<Publication[]>(ALL_PUBLICATIONS);
   const [recentlyViewedIds, setRecentlyViewedIds] = useState<string[]>([
     "news-2",
@@ -39,20 +39,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   ]);
   const [globalSearch, setGlobalSearch] = useState("");
 
-  const login = useCallback((email: string, password: string) => {
-    const account = DEMO_USERS[email.toLowerCase().trim()];
-    if (!account || account.password !== password) {
-      return "Invalid email or password. Use demo credentials shown below.";
-    }
-    setUser(account.user);
-    localStorage.setItem("iocl_user", JSON.stringify(account.user));
-    return null;
-  }, []);
-
-  const logout = useCallback(() => {
+ const fetchUserProfile = async (authUser: any) => {
+  if (!authUser) {
     setUser(null);
-    localStorage.removeItem("iocl_user");
-  }, []);
+    return;
+  }
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", authUser.id)
+    .single();
+
+  console.log("AUTH USER:", authUser);
+  console.log("PROFILE:", profile);
+  console.log("PROFILE ERROR:", error);
+
+  setUser({
+    ...authUser,
+    ...profile,
+  });
+};
+
+ useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => {
+    console.log("Initial Session:", data.session);
+    if (data.session?.user) {
+  fetchUserProfile(data.session.user);
+} else {
+  setUser(null);
+}
+  });
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    console.log("Auth Changed:", session);
+    if (session?.user) {
+  fetchUserProfile(session.user);
+} else {
+  setUser(null);
+}
+  });
+
+  return () => subscription.unsubscribe();
+}, []);
+
+  const login = useCallback(() => {
+  return null;
+}, []);
+
+  const logout = useCallback(async () => {
+  await supabase.auth.signOut();
+  setUser(null);
+}, []);
 
   const toggleBookmark = useCallback((id: string) => {
     setPublications((prev) =>

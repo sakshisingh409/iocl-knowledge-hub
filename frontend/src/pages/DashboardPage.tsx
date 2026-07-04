@@ -8,7 +8,10 @@ import StatCard from "../components/ui/StatCard";
 export default function DashboardPage() {
   const { user, globalSearch, toggleBookmark, markAsViewed, recentlyViewed } = useAuth();
 
-  const firstName = user?.name.split(" ")[0] ?? "User";
+  const firstName =
+  user?.user_metadata?.full_name?.split(" ")[0] ||
+  user?.email?.split("@")[0] ||
+  "User";
   const today = new Date().toLocaleDateString("en-GB", {
     weekday: "long",
     day: "numeric",

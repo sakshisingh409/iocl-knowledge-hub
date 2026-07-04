@@ -65,11 +65,15 @@ export default function Sidebar() {
         <div className="border-t border-slate-100 p-4">
           <div className="flex items-center gap-3 rounded-xl border border-slate-100 bg-slate-50/80 p-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-iocl-navy text-sm font-bold text-white">
-              {user.name.charAt(0)}
+              {(user.user_metadata?.full_name || user.email).charAt(0).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-iocl-navy">{user.name}</p>
-              <p className="truncate text-[11px] text-slate-400">{user.employeeId}</p>
+              <p className="truncate text-sm font-bold text-iocl-navy">
+                {user.user_metadata?.full_name || "User"}
+              </p>
+              <p className="truncate text-[11px] text-slate-400">
+                {user.user_metadata?.employee_id || user.email}
+              </p>
             </div>
             <button
               type="button"

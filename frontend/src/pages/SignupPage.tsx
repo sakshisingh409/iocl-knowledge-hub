@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, Lock, Mail, User, Building2 } from "lucide-react";
+import { supabase } from "../services/supabase";
 
 export default function SignupPage() {
   const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
-
 const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+const [fullName, setFullName] = useState("");
+const [employeeId, setEmployeeId] = useState("");
+const [email, setEmail] = useState("");
 
 const [password, setPassword] = useState("");
 
@@ -23,7 +27,7 @@ const [phone, setPhone] = useState("");
 
 const [agree, setAgree] = useState(false);
 
- const handleSubmit = (e: React.FormEvent) => {
+ const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   if (password !== confirmPassword) {
@@ -36,9 +40,50 @@ const [agree, setAgree] = useState(false);
     return;
   }
 
-  alert("Account Created Successfully!");
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        employee_id: employeeId,
+        department,
+        designation,
+        location,
+        phone,
+      },
+    },
+  });
 
-  navigate("/login");
+  if (error) {
+  alert(error.message);
+  return;
+}
+
+if (data.user) {
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert({
+      id: data.user.id,
+      full_name: fullName,
+      employee_id: employeeId,
+      email,
+      mobile: phone,
+      department,
+      designation,
+      location,
+      role: "user",
+    });
+
+  if (profileError) {
+    alert(profileError.message);
+    return;
+  }
+}
+
+alert("Account Created Successfully!");
+
+navigate("/login");
 };
 
   return (
@@ -81,22 +126,24 @@ const [agree, setAgree] = useState(false);
             className="mt-8 space-y-4"
           >
 
-            <form onSubmit={handleSubmit} className="mt-8 space-y-4">
-
   {/* Full Name */}
   <div className="relative">
     <User className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
     <input
-      placeholder="Full Name"
-      className="w-full rounded-xl border py-3 pl-10 pr-4"
-      required
-    />
+  value={fullName}
+  onChange={(e) => setFullName(e.target.value)}
+  placeholder="Full Name"
+  className="w-full rounded-xl border py-3 pl-10 pr-4"
+  required
+/>
   </div>
 
   {/* Employee ID */}
   <div className="relative">
     <Building2 className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
     <input
+      value={employeeId}
+      onChange={(e) => setEmployeeId(e.target.value)}
       placeholder="Employee ID"
       className="w-full rounded-xl border py-3 pl-10 pr-4"
       required
@@ -108,6 +155,8 @@ const [agree, setAgree] = useState(false);
     <Mail className="absolute left-3 top-4 h-4 w-4 text-slate-400" />
     <input
       type="email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
       placeholder="Official Email"
       className="w-full rounded-xl border py-3 pl-10 pr-4"
       required
@@ -263,8 +312,6 @@ const [agree, setAgree] = useState(false);
   </button>
 
 </form>
-
-          </form>
 
           <p className="mt-6 text-center text-sm">
 
