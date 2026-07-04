@@ -12,7 +12,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/home" replace />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -22,7 +22,7 @@ export default function LoginPage() {
       setError(err);
       return;
     }
-    navigate("/dashboard");
+    navigate("/home");
   };
 
   const fillDemo = (demoEmail: string, demoPassword: string) => {
@@ -137,6 +137,15 @@ export default function LoginPage() {
               Sign in
               <ArrowRight className="h-4 w-4" />
             </button>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => navigate("/forgot-password")}
+                className="text-sm font-semibold text-iocl-orange transition hover:underline"
+              >
+                Forgot Password?
+              </button>
+            </div>
           </form>
 
           <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-4">
@@ -162,6 +171,19 @@ export default function LoginPage() {
                 ADMIN
               </span>
               <span className="font-mono text-slate-600">admin@iocl.in / admin@123</span>
+            </button>
+          </div>
+          <div className="mt-8 border-t border-slate-200 pt-6 text-center">
+            <p className="text-sm text-slate-500">
+              Don't have an account?
+            </p>
+
+            <button
+              type="button"
+              onClick={() => navigate("/signup")}
+              className="mt-4 w-full rounded-xl border-2 border-iocl-orange py-3 font-bold text-iocl-orange transition hover:bg-iocl-orange hover:text-white"
+          >
+              Create Account
             </button>
           </div>
         </div>
