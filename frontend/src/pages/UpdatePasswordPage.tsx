@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock } from "lucide-react";
 import { supabase } from "../services/supabase";
@@ -10,6 +10,17 @@ export default function UpdatePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+  const getSession = async () => {
+    const { data, error } = await supabase.auth.getSession();
+
+    console.log("RESET SESSION:", data.session);
+    console.log("RESET ERROR:", error);
+  };
+
+  getSession();
+}, []);
 
   const handleUpdate = async () => {
     setError("");

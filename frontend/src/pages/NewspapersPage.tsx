@@ -1,5 +1,7 @@
-import { useMemo, useState } from "react";
+import NewsCard from "../components/ui/NewsCard";
+import { useEffect, useMemo, useState } from "react";
 import { Filter, Search } from "lucide-react";
+import { getIndustryNews } from "../services/newsService";
 import { useAuth } from "../context/AuthContext";
 import PageHeader from "../components/ui/PageHeader";
 import PublicationCard from "../components/ui/PublicationCard";
@@ -12,26 +14,58 @@ export default function NewspapersPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
 
+  const [news, setNews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+  async function fetchNews() {
+    try {
+      const data = await getIndustryNews();
+      console.log("NEWS:", data);
+      setNews(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  fetchNews();
+}, []);
+
+  // const newspapers = useMemo(() => {
+  //   const query = (localSearch || globalSearch).toLowerCase();
+  //   return publications
+  //     .filter((p) => p.type === "newspaper")
+  //     .filter((p) => activeCategory === "All" || p.category === activeCategory)
+  //     .filter(
+  //       (p) =>
+  //         !query ||
+  //         p.title.toLowerCase().includes(query) ||
+  //         p.description.toLowerCase().includes(query) ||
+  //         p.tags.some((t) => t.toLowerCase().includes(query)),
+  //     );
+  // }, [publications, localSearch, globalSearch, activeCategory]);
+
+
   const newspapers = useMemo(() => {
-    const query = (localSearch || globalSearch).toLowerCase();
-    return publications
-      .filter((p) => p.type === "newspaper")
-      .filter((p) => activeCategory === "All" || p.category === activeCategory)
-      .filter(
-        (p) =>
-          !query ||
-          p.title.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query) ||
-          p.tags.some((t) => t.toLowerCase().includes(query)),
-      );
-  }, [publications, localSearch, globalSearch, activeCategory]);
+  const query = (localSearch || globalSearch).toLowerCase();
+
+  return news.filter(
+    (item) =>
+      !query ||
+      item.title.toLowerCase().includes(query) ||
+      item.description.toLowerCase().includes(query)
+  );
+}, [news, localSearch, globalSearch]);
+
 
   return (
     <div>
       <PageHeader
         eyebrow="DAILY EDITIONS"
         title="Newspaper Repository"
-        subtitle={`${newspapers.length} of ${publications.filter((p) => p.type === "newspaper").length} newspapers`}
+        subtitle={`${newspapers.length} Global News Articles`}
         action={
           <button
             type="button"
@@ -78,16 +112,18 @@ export default function NewspapersPage() {
         />
       </div>
 
-      <div className="grid grid-cols-4 gap-5">
-        {newspapers.map((item) => (
-          <PublicationCard
-            key={item.id}
-            item={item}
-            onBookmark={toggleBookmark}
-            onOpen={markAsViewed}
-          />
-        ))}
-      </div>
+     <div className="grid grid-cols-4 gap-5">
+  {loading ? (
+    <p>Loading latest news...</p>
+  ) : (
+    newspapers.map((article, index) => (
+      <NewsCard
+        key={article.id || index}
+        article={article}
+      />
+    ))
+  )}
+</div>
 
       {newspapers.length === 0 && (
         <p className="py-12 text-center text-slate-400">No newspapers match your search.</p>

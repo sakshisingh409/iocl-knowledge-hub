@@ -13,7 +13,7 @@ const handleReset = async () => {
   setMessage("");
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: "http://localhost:3003/update-password",
+    redirectTo: "http://localhost:3000/update-password",
   });
 
   if (error) {
