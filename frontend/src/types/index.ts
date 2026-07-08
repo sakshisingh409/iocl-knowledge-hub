@@ -1,10 +1,20 @@
 export interface User {
-  name: string;
+  name?: string;
+  full_name?: string;
   email: string;
-  employeeId: string;
-  department: string;
-  location: string;
-  role: "employee" | "admin";
+  employeeId?: string;
+  employee_id?: string;
+  department?: string;
+  designation?: string;
+  location?: string;
+  role?: "employee" | "admin" | "user" | string;
+  user_metadata?: {
+    full_name?: string;
+    employee_id?: string;
+    department?: string;
+    designation?: string;
+    location?: string;
+  };
 }
 
 export interface Publication {

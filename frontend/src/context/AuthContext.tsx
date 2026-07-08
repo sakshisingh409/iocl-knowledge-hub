@@ -9,7 +9,7 @@ import {
 } from "react";
 
 import { supabase } from "../services/supabase";
-import { ALL_PUBLICATIONS, DEMO_USERS } from "../data/mockData";
+import { ALL_PUBLICATIONS } from "../data/mockData";
 import type { Publication, User } from "../types";
 
 interface AuthContextValue {
@@ -24,6 +24,8 @@ interface AuthContextValue {
   markAsViewed: (id: string) => void;
   globalSearch: string;
   setGlobalSearch: (value: string) => void;
+  addPublication: (pub: Publication) => void;
+  deletePublication: (id: string) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -104,6 +106,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRecentlyViewedIds((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, 8));
   }, []);
 
+  const addPublication = useCallback((pub: Publication) => {
+    setPublications((prev) => [pub, ...prev]);
+  }, []);
+
+  const deletePublication = useCallback((id: string) => {
+    setPublications((prev) => prev.filter((p) => p.id !== id));
+  }, []);
+
   const bookmarkedPublications = useMemo(
     () => publications.filter((p) => p.bookmarked),
     [publications],
@@ -130,6 +140,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       markAsViewed,
       globalSearch,
       setGlobalSearch,
+      addPublication,
+      deletePublication,
     }),
     [
       user,
@@ -141,6 +153,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       recentlyViewed,
       markAsViewed,
       globalSearch,
+      setGlobalSearch,
+      addPublication,
+      deletePublication,
     ],
   );
 

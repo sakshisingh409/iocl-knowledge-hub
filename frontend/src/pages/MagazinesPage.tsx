@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { supabase } from "../services/supabase";
 import { Filter, Search } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import PageHeader from "../components/ui/PageHeader";
@@ -8,30 +9,61 @@ const CATEGORIES = ["All", "CORPORATE MAGAZINE", "TECHNICAL MAGAZINE", "HR NEWSL
 
 export default function MagazinesPage() {
   const { publications, globalSearch, toggleBookmark, markAsViewed } = useAuth();
+  const [dbMagazines, setDbMagazines] = useState<any[]>([]);
+  useEffect(() => {
+  async function fetchMagazines() {
+    const { data, error } = await supabase
+      .from("publications")
+      .select("*")
+      .eq("type", "magazine")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setDbMagazines(data || []);
+  }
+
+  fetchMagazines();
+}, []);
+
   const [localSearch, setLocalSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
 
   const magazines = useMemo(() => {
     const query = (localSearch || globalSearch).toLowerCase();
-    return publications
+    return dbMagazines
       .filter((p) => p.type === "magazine")
       .filter((p) => activeCategory === "All" || p.category === activeCategory)
+
+      .map((item) => ({
+  ...item,
+  image: item.thumbnail,
+  date: new Date(item.created_at).toLocaleDateString(),
+  pages: "-",
+  size: "-",
+  bookmarked: false,
+  isNew: true,
+  tags: [],
+}))
+
       .filter(
-        (p) =>
-          !query ||
-          p.title.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query) ||
-          p.tags.some((t) => t.toLowerCase().includes(query)),
-      );
-  }, [publications, localSearch, globalSearch, activeCategory]);
+  (p) =>
+    !query ||
+    p.title.toLowerCase().includes(query) ||
+    p.description.toLowerCase().includes(query)
+);
+  }, [dbMagazines, localSearch, globalSearch, activeCategory]);
 
   return (
     <div>
       <PageHeader
         eyebrow="PERIODICALS"
         title="Magazine Repository"
-        subtitle={`${magazines.length} of ${publications.filter((p) => p.type === "magazine").length} magazines`}
+        subtitle={`${magazines.length} magazines available`}
         action={
           <button
             type="button"

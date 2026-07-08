@@ -27,9 +27,26 @@ export default function LoginPage() {
     return;
   }
 
-  alert("Login Successful");
+// Fetch logged in user's profile
+const { data: profile, error: profileError } = await supabase
+  .from("profiles")
+  .select("role")
+  .eq("id", data.user.id)
+  .single();
 
+if (profileError) {
+  setError(profileError.message);
+  return;
+}
+
+alert("Login Successful");
+
+// Redirect based on role
+if (profile.role === "admin") {
+  navigate("/admin/dashboard");
+} else {
   navigate("/home");
+}
 };
 
   return (
