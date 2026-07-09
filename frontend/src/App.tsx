@@ -25,8 +25,7 @@ import AdminPublicationsPage from "./pages/admin/AdminPublicationsPage";
 import AdminUsersPage from "./pages/admin/AdminUsersPage";
 import AdminProfilePage from "./pages/admin/AdminProfilePage";
 
-// Global UI Additions
-import CursorGlow from "./components/ui/CursorGlow";
+
 
 function RootRedirect() {
   const { isAuthenticated } = useAuth();
@@ -38,7 +37,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         {/* Global mouse glow trail tracking */}
-        <CursorGlow />
+        
 
         <Routes>
           {/* Public Employee Routes */}

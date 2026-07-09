@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "../../services/supabase";
 import { useAuth } from "../../context/AuthContext";
 import {
   Search,
@@ -27,7 +28,26 @@ const CATEGORIES = [
 ];
 
 export default function AdminPublicationsPage() {
-  const { publications, addPublication, deletePublication } = useAuth();
+  const { deletePublication } = useAuth();
+  const [publications, setPublications] = useState<any[]>([]);
+const fetchPublications = async () => {
+  const { data, error } = await supabase
+    .from("publications")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  setPublications(data ?? []);
+};
+
+useEffect(() => {
+  fetchPublications();
+}, []);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<"all" | "magazine" | "newspaper">("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,22 +64,41 @@ export default function AdminPublicationsPage() {
   const [tagsInput, setTagsInput] = useState("");
 
   // Filtered publications list
-  const filteredPublications = publications.filter((pub) => {
-    const matchesSearch =
-      pub.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      pub.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      pub.tags.some((t) => t.toLowerCase().includes(searchTerm.toLowerCase()));
+const filteredPublications = publications.filter((pub) => {
+  const matchesSearch =
+    pub.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pub.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    pub.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesType = filterType === "all" || pub.type === filterType;
-    return matchesSearch && matchesType;
-  });
+  const matchesType =
+    filterType === "all" || pub.type === filterType;
 
-  const handleDelete = (id: string, title: string) => {
-    if (confirm(`Are you sure you want to delete the publication "${title}"?`)) {
-      deletePublication(id);
-    }
-  };
+  return matchesSearch && matchesType;
+});
 
+const handleDelete = async (id: string, title: string) => {
+  const confirmDelete = confirm(
+    `Are you sure you want to delete "${title}"?`
+  );
+
+  if (!confirmDelete) return;
+
+  const { data, error } = await supabase
+    .from("publications")
+    .delete()
+    .eq("id", id)
+    .select();
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  setPublications((prev) =>
+    prev.filter((item) => item.id !== id)
+  );
+};
+ 
   const handleUploadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -193,7 +232,7 @@ export default function AdminPublicationsPage() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <img
-                        src={pub.image}
+                        src={pub.thumbnail}
                         alt={pub.title}
                         className="h-10 w-14 shrink-0 rounded bg-slate-100 object-cover"
                       />
@@ -215,12 +254,12 @@ export default function AdminPublicationsPage() {
                     {pub.category}
                   </td>
                   <td className="px-6 py-4 text-slate-500 font-medium text-xs">
-                    {pub.date}
+                    {new Date(pub.created_at).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1 text-[11px]">
-                      <span className="text-slate-400 font-medium">Pages: <strong className="text-slate-600 font-bold">{pub.pages}</strong></span>
-                      <span className="text-slate-400 font-medium">Size: <strong className="text-slate-600 font-bold">{pub.size}</strong></span>
+                      <span className="text-slate-400 font-medium">Pages: <strong className="text-slate-600 font-bold">-</strong></span>
+                      <span className="text-slate-400 font-medium">Size: <strong className="text-slate-600 font-bold">-</strong></span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">

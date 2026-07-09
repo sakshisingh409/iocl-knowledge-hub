@@ -1,7 +1,6 @@
-import NewsCard from "../components/ui/NewsCard";
+import { supabase } from "../services/supabase";
 import { useEffect, useMemo, useState } from "react";
 import { Filter, Search } from "lucide-react";
-import { getIndustryNews } from "../services/newsService";
 import { useAuth } from "../context/AuthContext";
 import PageHeader from "../components/ui/PageHeader";
 import PublicationCard from "../components/ui/PublicationCard";
@@ -14,23 +13,25 @@ export default function NewspapersPage() {
   const [showFilters, setShowFilters] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const [news, setNews] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+ const [dbNewspapers, setDbNewspapers] = useState<any[]>([]);
 
-  useEffect(() => {
-  async function fetchNews() {
-    try {
-      const data = await getIndustryNews();
-      console.log("NEWS:", data);
-      setNews(data);
-    } catch (error) {
+useEffect(() => {
+  async function fetchNewspapers() {
+    const { data, error } = await supabase
+      .from("publications")
+      .select("*")
+      .eq("type", "newspaper")
+      .order("created_at", { ascending: false });
+
+    if (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
+      return;
     }
+
+    setDbNewspapers(data || []);
   }
 
-  fetchNews();
+  fetchNewspapers();
 }, []);
 
   // const newspapers = useMemo(() => {
@@ -48,16 +49,29 @@ export default function NewspapersPage() {
   // }, [publications, localSearch, globalSearch, activeCategory]);
 
 
-  const newspapers = useMemo(() => {
+const newspapers = useMemo(() => {
   const query = (localSearch || globalSearch).toLowerCase();
 
-  return news.filter(
-    (item) =>
-      !query ||
-      item.title.toLowerCase().includes(query) ||
-      item.description.toLowerCase().includes(query)
-  );
-}, [news, localSearch, globalSearch]);
+  return dbNewspapers
+    .filter((p) => activeCategory === "All" || p.category === activeCategory)
+    .map((item) => ({
+      ...item,
+      image: item.thumbnail,
+      date: new Date(item.created_at).toLocaleDateString(),
+      pages: "-",
+      size: "-",
+      bookmarked: false,
+      isNew: true,
+      tags: [],
+    }))
+    .filter(
+      (p) =>
+        !query ||
+        p.title.toLowerCase().includes(query) ||
+        p.description.toLowerCase().includes(query) ||
+        p.tags.some((t: string) => t.toLowerCase().includes(query))
+    );
+}, [dbNewspapers, localSearch, globalSearch, activeCategory]);
 
 
   return (
@@ -65,7 +79,7 @@ export default function NewspapersPage() {
       <PageHeader
         eyebrow="DAILY EDITIONS"
         title="Newspaper Repository"
-        subtitle={`${newspapers.length} Global News Articles`}
+        subtitle={`${newspapers.length} newspapers available`}
         action={
           <button
             type="button"
@@ -112,17 +126,15 @@ export default function NewspapersPage() {
         />
       </div>
 
-     <div className="grid grid-cols-4 gap-5">
-  {loading ? (
-    <p>Loading latest news...</p>
-  ) : (
-    newspapers.map((article, index) => (
-      <NewsCard
-        key={article.id || index}
-        article={article}
-      />
-    ))
-  )}
+<div className="grid grid-cols-4 gap-5">
+  {newspapers.map((item) => (
+    <PublicationCard
+      key={item.id}
+      item={item}
+      onBookmark={toggleBookmark}
+      onOpen={markAsViewed}
+    />
+  ))}
 </div>
 
       {newspapers.length === 0 && (
