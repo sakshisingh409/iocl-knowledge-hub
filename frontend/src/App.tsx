@@ -1,3 +1,4 @@
+import LiveNewsPage from "./pages/LiveNewsPage";
 import AdminUploadMagazinePage from "./pages/admin/AdminUploadMagazinePage";
 import AdminUploadNewspaperPage from "./pages/admin/AdminUploadNewspaperPage";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -46,19 +47,21 @@ export default function App() {
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/update-password" element={<UpdatePasswordPage />} />
-          <Route path="/home" element={<HomePage />} />
+          
 
           {/* Protected Employee Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route element={<MainLayout />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/magazines" element={<MagazinesPage />} />
-              <Route path="/newspapers" element={<NewspapersPage />} />
-              <Route path="/bookmarks" element={<BookmarksPage />} />
-              <Route path="/chat" element={<ChatPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Route>
-          </Route>
+  <Route element={<MainLayout />}>
+    <Route path="/home" element={<HomePage />} />
+    <Route path="/dashboard" element={<DashboardPage />} />
+    <Route path="/live-news" element={<LiveNewsPage />} />
+    <Route path="/newspapers" element={<NewspapersPage />} />
+    <Route path="/magazines" element={<MagazinesPage />} />
+    <Route path="/bookmarks" element={<BookmarksPage />} />
+    <Route path="/chat" element={<ChatPage />} />
+    <Route path="/profile" element={<ProfilePage />} />
+  </Route>
+</Route>
 
           {/* Admin Control Routes (Isolated Admin layouts) */}
           <Route path="/admin/login" element={<AdminLoginPage />} />

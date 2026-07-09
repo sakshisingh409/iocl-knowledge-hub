@@ -82,17 +82,6 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-20 flex items-center justify-between border-b border-slate-200/60 bg-white/80 px-8 py-4 backdrop-blur-md">
       
-      {/* Search Input bar */}
-      <div className="relative flex-1 max-w-xl">
-        <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-        <input
-          type="search"
-          value={globalSearch}
-          onChange={(e) => setGlobalSearch(e.target.value)}
-          placeholder="Search magazines, newspapers, topics..."
-          className="w-full rounded-2xl border border-slate-200 bg-slate-50/50 py-2.5 pl-11 pr-4 text-sm text-slate-700 outline-none transition focus:border-iocl-orange focus:bg-white focus:ring-2 focus:ring-iocl-orange/10"
-        />
-      </div>
 
       {/* Access buttons (Notifications and Profile menu) */}
       <div className="flex items-center gap-4">
