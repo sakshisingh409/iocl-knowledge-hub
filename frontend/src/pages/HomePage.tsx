@@ -1,3 +1,4 @@
+import { getIndustryNews } from "../services/newsService";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -19,7 +20,6 @@ import {
   ShieldCheck
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import { getIndustryNews } from "../services/newsService";
 import { DASHBOARD_STATS, MAGAZINES } from "../data/mockData";
 import Footer from "../components/ui/Footer";
 import PublicationCard from "../components/ui/PublicationCard";
@@ -28,10 +28,23 @@ import { gsap } from "gsap";
 
 export default function HomePage() {
   const navigate = useNavigate();
+const [liveNews, setLiveNews] = useState<any[]>([]);
+
+useEffect(() => {
+  async function loadNews() {
+    try {
+      const news = await getIndustryNews();
+      setLiveNews(news.slice(0, 3));
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  loadNews();
+}, []);
+
   const { user, publications, bookmarkedPublications, recentlyViewed, markAsViewed, toggleBookmark } = useAuth();
   
-  const [news, setNews] = useState<any[]>([]);
-  const [newsLoading, setNewsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [timeOfDayGreeting, setTimeOfDayGreeting] = useState("Welcome");
 
@@ -43,20 +56,7 @@ export default function HomePage() {
     else setTimeOfDayGreeting("Good Evening");
   }, []);
 
-  // Fetch News articles
-  useEffect(() => {
-    async function fetchNews() {
-      try {
-        const data = await getIndustryNews();
-        setNews(data.slice(0, 3)); // show top 3
-      } catch (err) {
-        console.error("Failed to fetch news:", err);
-      } finally {
-        setNewsLoading(false);
-      }
-    }
-    fetchNews();
-  }, []);
+ 
 
   // GSAP Animations
   useEffect(() => {
@@ -119,13 +119,7 @@ export default function HomePage() {
       route: "/magazines",
       color: "from-orange-500/10 to-amber-500/10 text-iocl-orange hover:border-orange-300",
     },
-    {
-      title: "News Bulletins",
-      desc: "Real-time updates & daily briefing newspapers",
-      icon: Newspaper,
-      route: "/newspapers",
-      color: "from-emerald-500/10 to-teal-500/10 text-emerald-600 hover:border-emerald-300",
-    },
+    
     {
       title: "My Saved Library",
       desc: "Access your bookmarked resources",
@@ -314,6 +308,61 @@ export default function HomePage() {
           </div>
         </section>
 
+        <section className="mx-auto mt-14 max-w-7xl px-8">
+  <div className="mb-6 flex items-center justify-between">
+    <h2 className="text-3xl font-bold text-slate-900">
+      Live Industry News
+    </h2>
+
+    <button
+      onClick={() => navigate("/live-news")}
+      className="rounded-xl bg-orange-500 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-600"
+    >
+      View All →
+    </button>
+  </div>
+
+  <div className="grid gap-6 md:grid-cols-3">
+  {liveNews.map((article, index) => (
+    <div
+      key={index}
+      className="overflow-hidden rounded-3xl bg-white shadow-lg"
+    >
+      <img
+        src={
+          article.image ||
+          "https://images.unsplash.com/photo-1513828583688-c52646db42da?w=800"
+        }
+        className="h-56 w-full object-cover"
+        alt={article.title}
+      />
+
+      <div className="p-5">
+        <p className="text-xs font-bold uppercase text-orange-500">
+          {article.source?.name || "Industry News"}
+        </p>
+
+        <h3 className="mt-2 line-clamp-2 text-xl font-bold">
+          {article.title}
+        </h3>
+
+        <p className="mt-3 line-clamp-3 text-sm text-slate-600">
+          {article.description}
+        </p>
+
+        <button
+          onClick={() => navigate("/live-news")}
+          className="mt-5 font-semibold text-orange-600"
+        >
+          Read More →
+        </button>
+      </div>
+    </div>
+  ))}
+</div>
+
+</section>
+
         {/* Featured Spotlight Banner */}
         <section className="mx-auto max-w-7xl px-8 section-reveal">
           <h3 className="text-xl font-extrabold text-iocl-navy mb-6">Featured Publication Spotlight</h3>
@@ -394,49 +443,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Industry News Column */}
-          <div className="lg:col-span-1 space-y-6">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-iocl-orange" />
-              <h3 className="text-xl font-extrabold text-iocl-navy">Sector Global News</h3>
-            </div>
-
-            <div className="space-y-4">
-              {newsLoading ? (
-                <p className="text-xs text-slate-400">Fetching live energy sector updates...</p>
-              ) : news.length > 0 ? (
-                news.map((art, i) => (
-                  <div
-                    key={i}
-                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:shadow-md transition duration-200 flex flex-col justify-between"
-                  >
-                    <div>
-                      <span className="text-[9px] font-extrabold uppercase text-iocl-orange">
-                        {art.source?.name || "Global Feed"}
-                      </span>
-                      <h4 className="font-bold text-slate-800 text-xs mt-1 line-clamp-2">
-                        {art.title}
-                      </h4>
-                    </div>
-                    <div className="flex items-center justify-between mt-3 text-[10px] text-slate-400">
-                      <span>{new Date(art.publishedAt).toLocaleDateString()}</span>
-                      <a
-                        href={art.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-iocl-orange font-bold hover:underline"
-                      >
-                        Read article →
-                      </a>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-xs text-slate-400">No recent articles found.</p>
-              )}
-            </div>
-          </div>
-
+        
         </section>
 
         {/* Personalized Feeds: Bookmarks & Recently Viewed */}

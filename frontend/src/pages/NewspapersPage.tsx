@@ -75,26 +75,8 @@ const newspapers = useMemo(() => {
 
 
   return (
-    <div>
-      <PageHeader
-        eyebrow="DAILY EDITIONS"
-        title="Newspaper Repository"
-        subtitle={`${newspapers.length} newspapers available`}
-        action={
-          <button
-            type="button"
-            onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-              showFilters
-                ? "border-iocl-orange bg-iocl-orange-light text-iocl-orange"
-                : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-            }`}
-          >
-            <Filter className="h-4 w-4" />
-            Filters
-          </button>
-        }
-      />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
+      
 
       {showFilters && (
         <div className="mb-4 flex flex-wrap gap-2">
@@ -115,18 +97,92 @@ const newspapers = useMemo(() => {
         </div>
       )}
 
+      <div className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-iocl-navy via-slate-900 to-iocl-orange p-8 text-white shadow-2xl">
+
+  <div className="max-w-3xl">
+
+    <span className="rounded-full bg-white/20 px-4 py-1 text-xs font-bold uppercase tracking-widest">
+      🔥 Breaking Energy News
+    </span>
+
+    <h1 className="mt-5 text-4xl font-extrabold leading-tight">
+      Stay Updated with the Latest Oil & Energy Industry News
+    </h1>
+
+    <p className="mt-4 text-base text-white/80 leading-7">
+      Explore real-time updates from Indian Oil, global energy markets,
+      refinery operations, petroleum industry trends and corporate announcements.
+    </p>
+
+      <div className="mt-8 grid max-w-2xl grid-cols-3 gap-4">
+
+  <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
+    <p className="text-3xl font-bold text-white">120+</p>
+    <p className="mt-1 text-sm text-white/70">
+      Live Articles
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
+    <p className="text-3xl font-bold text-white">15+</p>
+    <p className="mt-1 text-sm text-white/70">
+      News Sources
+    </p>
+  </div>
+
+  <div className="rounded-2xl border border-white/20 bg-white/10 p-4 backdrop-blur">
+    <p className="text-3xl font-bold text-white">24×7</p>
+    <p className="mt-1 text-sm text-white/70">
+      Live Updates
+    </p>
+  </div>
+
+</div>
+
+  </div>
+
+</div>
+
       <div className="relative mb-6">
-        <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-iocl-orange" />
         <input
           type="search"
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
           placeholder="Search newspapers by title, topic, tag..."
-          className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm outline-none transition focus:border-iocl-orange focus:ring-2 focus:ring-iocl-orange/20"
+          className="w-full rounded-2xl border border-slate-200 bg-white py-4 pl-12 pr-5 text-sm shadow-md transition-all duration-300 outline-none focus:border-iocl-orange focus:ring-4 focus:ring-iocl-orange/20"
         />
       </div>
 
-<div className="grid grid-cols-4 gap-5">
+      <div className="mb-8">
+  <h2 className="mb-3 text-sm font-bold text-slate-500 uppercase">
+    Trending Topics
+  </h2>
+
+  <div className="flex flex-wrap gap-3">
+    <span className="rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
+      #IndianOil
+    </span>
+
+    <span className="rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
+      #Refinery
+    </span>
+
+    <span className="rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
+      #Energy
+    </span>
+
+    <span className="rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
+      #Safety
+    </span>
+
+    <span className="rounded-full bg-orange-100 px-4 py-2 text-sm font-semibold text-orange-700">
+      #Pipeline
+    </span>
+  </div>
+</div>
+
+<div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
   {newspapers.map((item) => (
     <PublicationCard
       key={item.id}

@@ -1,3 +1,4 @@
+import ioclLogo from "../../assets/iocl-logo.png";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -24,6 +25,11 @@ const navItems = [
     label: "Dashboard",
     icon: LayoutDashboard,
     to: "/dashboard",
+  },
+  {
+  label: "Live News",
+  icon: Newspaper,
+  to: "/live-news",
   },
   {
     label: "Newspapers",
@@ -65,9 +71,13 @@ export default function SidebarV2() {
 
   <div className="flex items-center gap-4">
 
-    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 text-2xl font-black text-white shadow-lg shadow-orange-300/40">
-      I
-    </div>
+   <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-white shadow-md">
+  <img
+    src={ioclLogo}
+    alt="Indian Oil"
+    className="h-14 w-14 object-contain"
+  />
+</div>
 
     <div>
 
@@ -95,22 +105,45 @@ export default function SidebarV2() {
 
 </div>
 
-      {/* Search */}
+{/* Navigation */}
 
-      <div className="p-5">
+<nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+  {navItems.map((item) => {
+    const Icon = item.icon;
 
-        <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+    return (
+      <NavLink
+        key={item.label}
+        to={item.to}
+        className={({ isActive }) =>
+          `flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold transition-all ${
+            isActive
+              ? "bg-orange-500 text-white shadow-lg"
+              : "text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+          }`
+        }
+      >
+        <Icon className="h-5 w-5" />
+        <span>{item.label}</span>
+      </NavLink>
+    );
+  })}
+</nav>
 
-          <Search className="h-4 w-4 text-slate-400" />
+{/* Bottom */}
 
-          <input
-            placeholder="Search menu..."
-            className="w-full bg-transparent text-sm outline-none"
-          />
-
-        </div>
-
-      </div>
+<div className="border-t border-slate-200 p-4">
+  <button
+    onClick={() => {
+      logout();
+      navigate("/");
+    }}
+    className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-red-600 hover:bg-red-50"
+  >
+    <LogOut className="h-5 w-5" />
+    Logout
+  </button>
+</div>
 
     </aside>
   );
