@@ -43,17 +43,17 @@ export default function ProfilePage() {
             <InfoField
               icon={IdCard}
               label="EMPLOYEE ID"
-              value={user.employee_id}
+              value={user.employee_id ?? ""}
             />
             <InfoField
                 icon={Building2}
                 label="DEPARTMENT"
-                value={user.department}
+                value={user.department ?? ""}
                 />
             <InfoField
                 icon={MapPin}
                 label="LOCATION"
-                value={user.location}
+                value={user.location ?? ""}
                 />
           </div>
 

@@ -8,7 +8,7 @@ import PublicationCard from "../components/ui/PublicationCard";
 const CATEGORIES = ["All", "CORPORATE MAGAZINE", "TECHNICAL MAGAZINE", "HR NEWSLETTER", "SAFETY BULLETIN", "SUSTAINABILITY", "OPERATIONS"];
 
 export default function MagazinesPage() {
-  const { publications, globalSearch, toggleBookmark, markAsViewed } = useAuth();
+  const { globalSearch, toggleBookmark, markAsViewed } = useAuth();
   const [dbMagazines, setDbMagazines] = useState<any[]>([]);
   useEffect(() => {
   async function fetchMagazines() {

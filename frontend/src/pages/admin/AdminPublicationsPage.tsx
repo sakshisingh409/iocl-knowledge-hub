@@ -12,7 +12,6 @@ import {
   FileText,
   AlertCircle
 } from "lucide-react";
-import type { Publication } from "../../types";
 
 const CATEGORIES = [
   "CORPORATE MAGAZINE",
@@ -28,7 +27,7 @@ const CATEGORIES = [
 ];
 
 export default function AdminPublicationsPage() {
-  const { deletePublication } = useAuth();
+  useAuth();
   const [publications, setPublications] = useState<any[]>([]);
 const fetchPublications = async () => {
   const { data, error } = await supabase
@@ -83,7 +82,7 @@ const handleDelete = async (id: string, title: string) => {
 
   if (!confirmDelete) return;
 
-  const { data, error } = await supabase
+  const { error } = await supabase
     .from("publications")
     .delete()
     .eq("id", id)
@@ -99,7 +98,7 @@ const handleDelete = async (id: string, title: string) => {
   );
 };
  
-  const handleUploadSubmit = (e: React.FormEvent) => {
+  const handleUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title.trim() || !date.trim() || !description.trim()) {
@@ -107,28 +106,26 @@ const handleDelete = async (id: string, title: string) => {
       return;
     }
 
-    // Process tags comma separated
-    const tags = tagsInput
-      .split(",")
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
+    const { error } = await supabase
+  .from("publications")
+  .insert([
+    {
+      title: title,
+      description: description,
+      category: category,
+      type: type,
+      thumbnail: image,
+      pdf_url: "",
+      uploaded_by: null,
+    },
+  ]);
 
-    const newPub: Publication = {
-      id: `${type === "magazine" ? "mag" : "news"}-${Date.now()}`,
-      title,
-      type,
-      category,
-      date,
-      pages: Number(pages),
-      size,
-      description,
-      image: image || "https://images.unsplash.com/photo-1581092918056-0c4c3acd3782?w=600",
-      tags: tags.length ? tags : ["Internal", type.toUpperCase()],
-      isNew: true,
-      bookmarked: false,
-    };
+if (error) {
+  alert(error.message);
+  return;
+}
 
-    addPublication(newPub);
+    await fetchPublications();
     setIsModalOpen(false);
 
     // Reset Form

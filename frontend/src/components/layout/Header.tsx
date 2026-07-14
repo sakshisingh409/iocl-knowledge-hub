@@ -1,10 +1,10 @@
-import { Bell, Search, FileText, Newspaper, Bot, LogOut, User, ShieldCheck, ChevronDown } from "lucide-react";
+import { Bell, FileText, Newspaper, Bot, LogOut, User, ShieldCheck, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-  const { globalSearch, setGlobalSearch, user, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [showNotifications, setShowNotifications] = useState(false);
