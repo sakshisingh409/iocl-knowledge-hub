@@ -1,8 +1,7 @@
 import { getIndustryNews } from "../services/newsService";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  BookOpen,
   Bot,
   FileText,
   LayoutDashboard,
@@ -11,10 +10,8 @@ import {
   ArrowRight,
   Search,
   Bookmark,
-  TrendingUp,
   Sparkles,
   Clock,
-  Building2,
   Download,
   Library,
   ShieldCheck
@@ -23,7 +20,6 @@ import { useAuth } from "../context/AuthContext";
 import { DASHBOARD_STATS, MAGAZINES } from "../data/mockData";
 import Footer from "../components/ui/Footer";
 import PublicationCard from "../components/ui/PublicationCard";
-import NewsCard from "../components/ui/NewsCard";
 import { gsap } from "gsap";
 
 export default function HomePage() {
@@ -92,7 +88,6 @@ useEffect(() => {
 
   // Employee Name details
   const employeeName = user?.full_name || "Guest Employee";
-  const employeeId = user?.employee_id || "IOCL-Guest";
   const department = user?.department || "Refinery & Operations";
 
   // Filter publications based on search bar

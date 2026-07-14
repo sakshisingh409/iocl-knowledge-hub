@@ -8,9 +8,7 @@ import {
   Bookmark,
   Bot,
   User,
-  Settings,
   LogOut,
-  Search,
 } from "lucide-react";
 
 import { useAuth } from "../../context/AuthContext";
@@ -59,7 +57,7 @@ const navItems = [
 ];
 
 export default function SidebarV2() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
 
   return (

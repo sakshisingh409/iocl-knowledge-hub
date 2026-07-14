@@ -1,16 +1,14 @@
 import { supabase } from "../services/supabase";
 import { useEffect, useMemo, useState } from "react";
-import { Filter, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
-import PageHeader from "../components/ui/PageHeader";
 import PublicationCard from "../components/ui/PublicationCard";
 
 const CATEGORIES = ["All", "INDUSTRY BRIEFING", "SECTOR NEWS", "REFINERY OPERATIONS", "MARKET ANALYSIS", "CORPORATE NEWS"];
 
 export default function NewspapersPage() {
-  const { publications, globalSearch, toggleBookmark, markAsViewed } = useAuth();
+  const { globalSearch, toggleBookmark, markAsViewed } = useAuth();
   const [localSearch, setLocalSearch] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
 
  const [dbNewspapers, setDbNewspapers] = useState<any[]>([]);
@@ -78,7 +76,7 @@ const newspapers = useMemo(() => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-orange-50">
       
 
-      {showFilters && (
+      <div className="mb-4 flex flex-wrap gap-2">
         <div className="mb-4 flex flex-wrap gap-2">
           {CATEGORIES.map((cat) => (
             <button
@@ -95,7 +93,7 @@ const newspapers = useMemo(() => {
             </button>
           ))}
         </div>
-      )}
+            </div>
 
       <div className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-iocl-navy via-slate-900 to-iocl-orange p-8 text-white shadow-2xl">
 
